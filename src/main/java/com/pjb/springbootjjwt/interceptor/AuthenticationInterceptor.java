@@ -7,7 +7,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.pjb.springbootjjwt.annotation.PassToken;
 import com.pjb.springbootjjwt.annotation.UserLoginToken;
-import com.pjb.springbootjjwt.entity.User;
+import com.pjb.springbootjjwt.model.User;
 import com.pjb.springbootjjwt.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -28,15 +28,18 @@ import java.lang.reflect.Method;
 public class AuthenticationInterceptor implements HandlerInterceptor {
     @Autowired
     UserService userService;
+
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object object) throws Exception {
-        String token = httpServletRequest.getHeader("token");// 从 http 请求头中取出 token
+        // 从 http 请求头中取出 token
+        String token = httpServletRequest.getHeader("token");
+
         // 如果不是映射到方法直接通过
-        if(!(object instanceof HandlerMethod)){
+        if (!(object instanceof HandlerMethod)) {
             return true;
         }
-        HandlerMethod handlerMethod=(HandlerMethod)object;
-        Method method=handlerMethod.getMethod();
+        HandlerMethod handlerMethod = (HandlerMethod) object;
+        Method method = handlerMethod.getMethod();
         //检查是否有passtoken注释，有则跳过认证
         if (method.isAnnotationPresent(PassToken.class)) {
             PassToken passToken = method.getAnnotation(PassToken.class);
@@ -80,6 +83,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
 
     }
+
     @Override
     public void afterCompletion(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
 
